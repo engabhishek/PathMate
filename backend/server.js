@@ -1,18 +1,8 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+require("dotenv").config();
+const app = require("./src/app");
+const connectDb = require("./src/DB/db");
 
-const app = express();
-
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
-// Test route
-app.get('/ping', (req, res) => {
-  res.json({ ok: true, msg: 'Backend is running 🚀' });
+connectDb();
+app.listen(3000, () => {
+  console.log("server running omn port 3000...");
 });
-
-// Start server
-const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`✅ Server running on http://localhost:${port}`));

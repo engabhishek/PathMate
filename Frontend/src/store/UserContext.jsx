@@ -6,7 +6,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // ✅ new state
 
-  // Load from localStorage on refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
