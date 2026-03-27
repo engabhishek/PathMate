@@ -33,15 +33,31 @@ const Dashboard = () => {
       } else {
         console.error("❌ Invalid response:", data);
         setRoadmap([
-          { title: "Start Basics", duration: "2 weeks" },
-          { title: "Practice Projects", duration: "1 month" },
+          {
+            title: "Start Basics",
+            duration: "2 weeks",
+            substeps: ["Learn basics", "Watch tutorials", "Practice daily"],
+          },
+          {
+            title: "Practice Projects",
+            duration: "1 month",
+            substeps: ["Build small projects", "Improve skills", "Get feedback"],
+          },
         ]);
       }
     } catch (err) {
       console.error("❌ Fetch error:", err);
       setRoadmap([
-        { title: "Learn Fundamentals", duration: "2 weeks" },
-        { title: "Build Projects", duration: "1 month" },
+        {
+          title: "Learn Fundamentals",
+          duration: "2 weeks",
+          substeps: ["Understand basics", "Read docs", "Practice"],
+        },
+        {
+          title: "Build Projects",
+          duration: "1 month",
+          substeps: ["Create projects", "Upload work", "Improve UI"],
+        },
       ]);
     }
 
@@ -155,7 +171,19 @@ const Dashboard = () => {
 
                     <div className="bg-white/20 p-4 rounded-lg">
                       <h3 className="text-lg font-semibold">{step.title}</h3>
-                      <p className="text-sm text-gray-200">⏳ {step.duration}</p>
+                      <p className="text-sm text-gray-200 mb-2">⏳ {step.duration}</p>
+
+                      {/* ✅ Substeps */}
+                      {Array.isArray(step.substeps) && step.substeps.length > 0 && (
+                        <ul className="text-sm text-gray-100 space-y-1 mt-2">
+                          {step.substeps.map((sub, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span>👉</span>
+                              <span>{sub}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </motion.div>
                 ))}
