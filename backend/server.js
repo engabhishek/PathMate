@@ -1,8 +1,12 @@
-require("dotenv").config();
-const app = require("./src/app");
-const connectDb = require("./src/DB/db");
+require("dotenv").config({ path: "./.env" });
 
-connectDb();
-app.listen(3000, () => {
-  console.log("server running omn port 3000...");
+const app = require("./src/app");
+const connectDB = require("./src/DB/db");
+
+connectDB(); // ✅ now it works
+
+const PORT = 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
