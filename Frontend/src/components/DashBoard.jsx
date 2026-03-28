@@ -41,7 +41,11 @@ const Dashboard = () => {
           {
             title: "Practice Projects",
             duration: "1 month",
-            substeps: ["Build small projects", "Improve skills", "Get feedback"],
+            substeps: [
+              "Build small projects",
+              "Improve skills",
+              "Get feedback",
+            ],
           },
         ]);
       }
@@ -80,7 +84,10 @@ const Dashboard = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          message: input,
+          user: user,
+        }),
       });
 
       const data = await res.json();
@@ -105,7 +112,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white flex flex-col">
-      
       {/* Navbar */}
       <header className="w-full flex justify-between items-center px-6 py-4 bg-black/20 backdrop-blur-lg">
         <h1 className="text-2xl font-bold tracking-wide">PathMate 🚀</h1>
@@ -119,25 +125,42 @@ const Dashboard = () => {
 
       {/* Main */}
       <main className="flex-1 px-4 sm:px-6 py-6 overflow-y-auto">
-
         {/* Top Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
           {/* User Info */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             className="lg:col-span-1 bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/20"
           >
-            <h2 className="text-xl font-bold mb-4">👤 {user?.name || "User"}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              👤 {user?.name || "User"}
+            </h2>
 
             <div className="space-y-2 text-sm text-gray-200">
-              <p><span className="font-semibold">Age:</span> {user?.age || "N/A"}</p>
-              <p><span className="font-semibold">Education:</span> {user?.educationLevel || "N/A"}</p>
-              <p><span className="font-semibold">Interest:</span> {user?.interestField || "N/A"}</p>
-              <p><span className="font-semibold">Skills:</span> {user?.skills || "N/A"}</p>
-              <p><span className="font-semibold">Passion:</span> {user?.passion || "N/A"}</p>
-              <p><span className="font-semibold">Timeline:</span> {user?.timeline || "N/A"}</p>
+              <p>
+                <span className="font-semibold">Age:</span> {user?.age || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Education:</span>{" "}
+                {user?.educationLevel || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Interest:</span>{" "}
+                {user?.interestField || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Skills:</span>{" "}
+                {user?.skills || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Passion:</span>{" "}
+                {user?.passion || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Timeline:</span>{" "}
+                {user?.timeline || "N/A"}
+              </p>
             </div>
           </motion.div>
 
@@ -149,7 +172,7 @@ const Dashboard = () => {
           >
             <h2 className="text-xl font-bold mb-4">🧭 Your Roadmap</h2>
 
-            {(!Array.isArray(roadmap) || roadmap.length === 0) ? (
+            {!Array.isArray(roadmap) || roadmap.length === 0 ? (
               <button
                 onClick={handleGenerateRoadmap}
                 disabled={loading}
@@ -171,19 +194,22 @@ const Dashboard = () => {
 
                     <div className="bg-white/20 p-4 rounded-lg">
                       <h3 className="text-lg font-semibold">{step.title}</h3>
-                      <p className="text-sm text-gray-200 mb-2">⏳ {step.duration}</p>
+                      <p className="text-sm text-gray-200 mb-2">
+                        ⏳ {step.duration}
+                      </p>
 
                       {/* ✅ Substeps */}
-                      {Array.isArray(step.substeps) && step.substeps.length > 0 && (
-                        <ul className="text-sm text-gray-100 space-y-1 mt-2">
-                          {step.substeps.map((sub, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span>👉</span>
-                              <span>{sub}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                      {Array.isArray(step.substeps) &&
+                        step.substeps.length > 0 && (
+                          <ul className="text-sm text-gray-100 space-y-1 mt-2">
+                            {step.substeps.map((sub, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span>👉</span>
+                                <span>{sub}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                     </div>
                   </motion.div>
                 ))}
@@ -215,9 +241,7 @@ const Dashboard = () => {
               </div>
             ))}
 
-            {chatLoading && (
-              <p className="text-sm text-gray-300">Typing...</p>
-            )}
+            {chatLoading && <p className="text-sm text-gray-300">Typing...</p>}
           </div>
 
           {/* Input */}
@@ -237,7 +261,6 @@ const Dashboard = () => {
             </button>
           </div>
         </motion.div>
-
       </main>
     </div>
   );

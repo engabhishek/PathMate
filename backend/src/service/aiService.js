@@ -8,41 +8,39 @@ You are an expert career mentor.
 Create a VERY SIMPLE and STEP-BY-STEP roadmap for a beginner student.
 
 User Details:
-- Age: ${user.age}
-- Education: ${user.education}
-- Interest: ${user.interest}
-- Skills: ${user.skills}
-- Passion: ${user.passion}
-- Timeline: ${user.timeline}
+- Age: ${user?.age}
+- Education: ${user?.educationLevel || user?.education}
+- Interest: ${user?.interestField || user?.interest}
+- Skills: ${user?.skills}
+- Passion: ${user?.passion}
+- Timeline: ${user?.timeline}
 
 IMPORTANT RULES:
-1. Use VERY EASY English (like teaching a beginner student)
-2. Divide roadmap into PHASES (Step 1, Step 2, etc.)
-3. Each phase MUST have:
-   - title (clear and simple)
-   - duration (like "1 week", "2 weeks")
-   - substeps (5-7 small actionable tasks)
-4. Substeps should be:
-   - practical
-   - easy to follow
-   - beginner friendly
-5. Keep roadmap realistic for given timeline
+1. Use VERY EASY English
+2. Divide roadmap into PHASES (Step 1, Step 2...)
+3. Each phase MUST include:
+   - title
+   - duration
+   - substeps (5-7)
+4. Substeps must be practical and beginner-friendly
+5. Keep roadmap realistic
 
-Return ONLY JSON in this format:
+⚠️ VERY IMPORTANT:
+- Return ONLY pure JSON
+- NO explanation
+- NO markdown
+- NO code block
 
+Format:
 {
   "roadmap": [
     {
       "title": "Step 1: ...",
       "duration": "...",
-      "substeps": [
-        "Do this",
-        "Practice this",
-        "Learn this"
-      ]
+      "substeps": ["...", "..."]
     }
   ],
-  "motivation": "Short encouraging message"
+  "motivation": "..."
 }
 `;
 
@@ -50,54 +48,85 @@ Return ONLY JSON in this format:
       "https://openrouter.ai/api/v1/chat/completions",
       {
         model: "openai/gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
+        temperature: 0.5, // 🔥 makes output more structured
+        messages: [
+          {
+            role: "system",
+            content: "You only return valid JSON. No extra text.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
       },
       {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
-    const text = response.data.choices[0].message.content;
+    let text = response.data.choices[0].message.content;
 
     console.log("🤖 RAW:", text);
 
-    // ✅ SAFE PARSING
-    let cleaned = text;
+    // 🔥 SUPER CLEAN PARSING
+    text = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-    if (text.includes("```")) {
-      cleaned = text.replace(/```json|```/g, "").trim();
+    const firstBrace = text.indexOf("{");
+    const lastBrace = text.lastIndexOf("}");
+
+    if (firstBrace === -1 || lastBrace === -1) {
+      throw new Error("Invalid JSON structure");
     }
 
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
-
-    if (start === -1 || end === -1) {
-      throw new Error("Invalid JSON format from AI");
-    }
-
-    const jsonString = cleaned.substring(start, end + 1);
+    const jsonString = text.slice(firstBrace, lastBrace + 1);
 
     const parsed = JSON.parse(jsonString);
 
-    console.log("✅ PARSED:", parsed);
+    // ✅ SAFETY CHECK
+    if (!parsed.roadmap || !Array.isArray(parsed.roadmap)) {
+      throw new Error("Invalid roadmap format");
+    }
 
     return parsed;
+
   } catch (error) {
     console.error("❌ FINAL ERROR:", error.response?.data || error.message);
 
-    // ❗ DO NOT THROW → return fallback instead
+    // 🔥 SMART FALLBACK (better than before)
     return {
       roadmap: [
         {
-          title: "Start Basics",
+          title: "Step 1: Understand Basics",
+          duration: "1 week",
+          substeps: [
+            "Search about your field on YouTube",
+            "Watch beginner tutorials",
+            "Read simple articles",
+            "Write notes",
+            "Explore tools used in this field",
+          ],
+        },
+        {
+          title: "Step 2: Start Practice",
           duration: "2 weeks",
-          substeps: ["Learn basics", "Practice daily"],
+          substeps: [
+            "Do small exercises daily",
+            "Try beginner projects",
+            "Repeat concepts",
+            "Fix mistakes",
+            "Stay consistent",
+          ],
         },
       ],
-      motivation: "Stay consistent and keep learning 🚀",
+      motivation:
+        "Start small, stay consistent, and you will achieve your goal 🚀",
     };
   }
 };
