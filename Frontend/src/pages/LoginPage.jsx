@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const LoginPage = () => {
   const [mode, setMode] = useState("signup");
+  
   const navigate = useNavigate();
   const {
     register,

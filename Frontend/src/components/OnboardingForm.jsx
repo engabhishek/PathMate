@@ -5,12 +5,19 @@ import { UserContext } from "../store/UserContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 const OnboardingForm = () => {
-  const { register, handleSubmit, reset, watch } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors }, // ✅ added
+  } = useForm();
+
   const navigate = useNavigate();
   const { login } = useContext(UserContext);
 
   const selectedInterest = watch("interestField");
-  const [loading, setLoading] = useState(false); // ✅ added
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -20,7 +27,6 @@ const OnboardingForm = () => {
         data.interestField = data.customInterest;
       }
 
-      // ✅ CALL BACKEND
       const res = await fetch("http://localhost:5000/api/generate-roadmap", {
         method: "POST",
         headers: {
@@ -35,7 +41,6 @@ const OnboardingForm = () => {
         throw new Error(result.error || "Failed to generate roadmap");
       }
 
-      // ✅ SAVE USER + AI DATA
       login({
         ...data,
         roadmap: result.roadmap,
@@ -82,11 +87,15 @@ const OnboardingForm = () => {
             </label>
             <input
               type="text"
-              {...register("name", { required: true })}
+              {...register("name", { required: "Full Name is required" })}
               placeholder="Enter your full name"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300"
             />
+            {errors.name && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.name.message}
+              </p>
+            )}
           </div>
 
           {/* Age */}
@@ -94,10 +103,14 @@ const OnboardingForm = () => {
             <label className="block text-sm text-gray-200 mb-1">Age</label>
             <input
               type="number"
-              {...register("age", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("age", { required: "Age is required" })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             />
+            {errors.age && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.age.message}
+              </p>
+            )}
           </div>
 
           {/* Education */}
@@ -106,9 +119,10 @@ const OnboardingForm = () => {
               Education Level
             </label>
             <select
-              {...register("educationLevel", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("educationLevel", {
+                required: "Select education level",
+              })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             >
               <option value="" className="text-black">
                 Select...
@@ -126,6 +140,11 @@ const OnboardingForm = () => {
                 Working Professional
               </option>
             </select>
+            {errors.educationLevel && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.educationLevel.message}
+              </p>
+            )}
           </div>
 
           {/* Skills */}
@@ -135,8 +154,7 @@ const OnboardingForm = () => {
               type="text"
               {...register("skills")}
               placeholder="HTML, CSS, JavaScript"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             />
           </div>
 
@@ -146,9 +164,10 @@ const OnboardingForm = () => {
               Interest Field
             </label>
             <select
-              {...register("interestField", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("interestField", {
+                required: "Select an interest",
+              })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             >
               <option value="" className="text-black">
                 Select...
@@ -172,8 +191,12 @@ const OnboardingForm = () => {
                 Other
               </option>
             </select>
+            {errors.interestField && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.interestField.message}
+              </p>
+            )}
 
-            {/* Custom Input */}
             <AnimatePresence>
               {selectedInterest === "other" && (
                 <motion.input
@@ -182,12 +205,19 @@ const OnboardingForm = () => {
                   exit={{ opacity: 0, y: -10 }}
                   type="text"
                   placeholder="Enter your interest..."
-                  {...register("customInterest", { required: true })}
-                  className="mt-3 w-full p-3 rounded-lg bg-white/20 text-white 
-                  border border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+                  {...register("customInterest", {
+                    required: "Please enter your custom interest",
+                  })}
+                  className="mt-3 w-full p-3 rounded-lg bg-white/20 text-white"
                 />
               )}
             </AnimatePresence>
+
+            {errors.customInterest && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.customInterest.message}
+              </p>
+            )}
           </div>
 
           {/* Passion */}
@@ -199,8 +229,7 @@ const OnboardingForm = () => {
               type="text"
               {...register("passion")}
               placeholder="e.g., I love building apps"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             />
           </div>
 
@@ -212,8 +241,7 @@ const OnboardingForm = () => {
             <textarea
               {...register("achievements")}
               placeholder="Hackathon winner..."
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             />
           </div>
 
@@ -224,30 +252,35 @@ const OnboardingForm = () => {
             </label>
             <input
               type="number"
-              {...register("timePerWeek", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("timePerWeek", {
+                required: "Enter time per week",
+              })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             />
+            {errors.timePerWeek && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.timePerWeek.message}
+              </p>
+            )}
           </div>
 
           {/* Timeline */}
           <div>
             <label className="block text-sm text-gray-200 mb-1">Timeline</label>
             <select
-              {...register("timeline", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("timeline", { required: "Select timeline" })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             >
-              <option value="3months" className="text-black">
-                3 Months
-              </option>
-              <option value="6months" className="text-black">
-                6 Months
-              </option>
-              <option value="12months" className="text-black">
-                12 Months
-              </option>
+              <option value="">Select...</option>
+              <option value="3months">3 Months</option>
+              <option value="6months">6 Months</option>
+              <option value="12months">12 Months</option>
             </select>
+            {errors.timeline && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.timeline.message}
+              </p>
+            )}
           </div>
 
           {/* Learning Style */}
@@ -256,34 +289,32 @@ const OnboardingForm = () => {
               Learning Style
             </label>
             <select
-              {...register("preference", { required: true })}
-              className="w-full p-3 rounded-lg bg-white/20 text-white 
-              border border-transparent focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none"
+              {...register("preference", {
+                required: "Select learning style",
+              })}
+              className="w-full p-3 rounded-lg bg-white/20 text-white"
             >
-              <option value="video" className="text-black">
-                Video-based
-              </option>
-              <option value="text" className="text-black">
-                Text-based
-              </option>
-              <option value="project" className="text-black">
-                Project-based
-              </option>
-              <option value="hybrid" className="text-black">
-                Hybrid
-              </option>
+              <option value="">Select...</option>
+              <option value="video">Video-based</option>
+              <option value="text">Text-based</option>
+              <option value="project">Project-based</option>
+              <option value="hybrid">Hybrid</option>
             </select>
+            {errors.preference && (
+              <p className="text-red-300 text-sm mt-1">
+                {errors.preference.message}
+              </p>
+            )}
           </div>
 
           {/* Submit */}
           <button
             type="submit"
-            disabled={loading} // ✅ added
+            disabled={loading}
             className="md:col-span-2 w-full bg-white text-black font-semibold py-3 rounded-lg 
             hover:bg-gray-200 transition transform hover:scale-105 disabled:opacity-50"
           >
-            {loading ? "Generating..." : "Submit & Generate Roadmap 🚀"}{" "}
-            {/* ✅ added */}
+            {loading ? "Generating..." : "Submit & Generate Roadmap 🚀"}
           </button>
         </form>
       </motion.div>

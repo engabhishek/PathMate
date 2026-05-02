@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   passion: String,
   timeline: String,
 
-  // ✅ NEW FIELDS
+  //  NEW FIELDS
   roadmap: [
     {
       title: String,
