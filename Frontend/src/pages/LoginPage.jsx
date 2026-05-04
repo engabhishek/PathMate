@@ -17,7 +17,7 @@ const LoginPage = () => {
   } = useForm();
   const { login } = useContext(UserContext);
 
-  // 🖱️ Cursor Light Effect
+  //  Cursor Light Effect
   useEffect(() => {
     const move = (e) => {
       document.documentElement.style.setProperty("--x", e.clientX + "px");
